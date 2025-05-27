@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Code 39 Barcode Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+          sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 2rem;
+      }
+      #barcode {
+        margin-top: 1rem;
+      }
+      #error {
+        color: #d32f2f;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Barcode</h1>
+
+    <!-- The barcode will be injected here -->
+    <svg id="barcode"></svg>
+
+    <p id="error"></p>
+
+    <!-- JsBarcode CDN (supports CODE39) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script>
+      // Helper to grab query‑string parameters
+      function getParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+      }
+
+      const rawValue = getParam("value") || getParam("data") || "";
+      const value = (rawValue || "").toUpperCase();
+      const errorEl = document.getElementById("error");
+
+      if (!value) {
+        errorEl.textContent = "Missing \"value\" query parameter. Example: ?value=HELLO123";
+      } else {
+        // Code 39 allows A‒Z, 0‒9, space, - . $ / + %
+        const valid = /^[0-9A-Z \-.\$\/\+%]+$/;
+        if (!valid.test(value)) {
+          errorEl.textContent =
+            "Invalid characters for Code 39. Allowed: A–Z, 0–9, space, - . $ / + %";
+        } else {
+          JsBarcode("#barcode", value, {
+            format: "CODE39",
+            width: 2,
+            height: 100,
+            displayValue: true,
+            margin: 10,
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
